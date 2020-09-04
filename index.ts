@@ -20,27 +20,38 @@ const React = (function () {
   };
 
   const useEffect = (callback, depArray) => {
-    const hasNoDeps = !depArray
-    const deps = hooks[currentHook] // type: array | undefined
-    const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true
+    const hasNoDeps = !depArray;
+    const deps = hooks[currentHook]; // type: array | undefined
+    const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
     if (hasNoDeps || hasChangedDeps) {
-      callback()
-      hooks[currentHook] = depArray
+      callback();
+      hooks[currentHook] = depArray;
     }
-    currentHook++ // done with this hook
+    currentHook++; // done with this hook
   };
 
   const useState = (initialValue) => {
-    hooks[currentHook] = hooks[currentHook] || initialValue // type: any
-    const setStateHookIndex = currentHook // for setState's closure!
-    const setState = newState => (hooks[setStateHookIndex] = newState)
-    return [hooks[currentHook++], setState]
+    hooks[currentHook] = hooks[currentHook] || initialValue; // type: any
+    const setStateHookIndex = currentHook; // for setState's closure!
+    const setState = newState => (hooks[setStateHookIndex] = newState);
+    return [hooks[currentHook++], setState];
   };
+
+  const useMemo = (memo, depArray) => {
+    const hasNoDeps = !depArray;
+    const deps = hooks[currentHook]; // type: array | undefined
+    const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
+
+    if (hasNoDeps || hasChangedDeps) {
+      return memo();
+    }
+  }
 
   return {
     mount,
     render: reactRender,
     useEffect,
+    useMemo,
     useState,
   }
 })();
@@ -52,6 +63,10 @@ const Component = () => {
     console.log('hello this is an effect')
   }, []);
 
+  const doubleCount = React.useMemo(() => {
+    return count * 2;
+  }, [count])
+
   const increment = () => {
     console.log('incrementing: ', count);
     setCount(count + 1);
@@ -61,6 +76,7 @@ const Component = () => {
   return html`
     <h1>Hello World</h1>  
     <h3>Count: ${count}</h3>
+    <h3>Double count: ${doubleCount}</h3>
     <button @click=${increment}>Increment</button>
   `;
 }
