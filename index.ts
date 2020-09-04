@@ -1,4 +1,5 @@
 import { html, render } from 'lit-html';
+import { format } from 'date-fns'
 
 const el = document.getElementById('app');
 
@@ -88,7 +89,7 @@ const Component = () => {
   }
 
   const formatTime = (date: Date) => {
-    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    return format(date, 'HH:mm:ss a')
   }
 
   return html`
