@@ -39,12 +39,16 @@ const React = (function () {
 
   const useMemo = (memo, depArray) => {
     const hasNoDeps = !depArray;
-    const deps = hooks[currentHook]; // type: array | undefined
+    var [value, deps] = hooks[currentHook] ?? []; // type: array | undefined
     const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
 
     if (hasNoDeps || hasChangedDeps) {
-      return memo();
+      value = memo()
     }
+
+    hooks[currentHook++] = [value, depArray]
+
+    return value;
   }
 
   return {
@@ -58,26 +62,49 @@ const React = (function () {
 
 const Component = () => {
   var [count, setCount] = React.useState(0);
+  var [date, setDate] = React.useState(new Date());
 
   React.useEffect(() => {
     console.log('hello this is an effect')
   }, []);
 
+  React.useEffect(() => {
+    var timeout = setTimeout(() => {
+      setDate(new Date());
+      React.render();
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [date, setDate])
+
   const doubleCount = React.useMemo(() => {
+    console.log('calculating doubleCount');
     return count * 2;
   }, [count])
 
   const increment = () => {
-    console.log('incrementing: ', count);
     setCount(count + 1);
     React.render();
   }
 
+  const formatTime = (date: Date) => {
+    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  }
+
   return html`
-    <h1>Hello World</h1>  
-    <h3>Count: ${count}</h3>
-    <h3>Double count: ${doubleCount}</h3>
-    <button @click=${increment}>Increment</button>
+    <div class="h-screen w-100 flex flex-col bg-gray-700 items-center justify-center">
+      <div class="rounded bg-gray-100 w-2/3 px-6 py-4 flex flex-col shadow-lg">
+        <h1 class="text-3xl">What the Hook?!</h1>  
+        <h3 class="text-xl">Count: ${count}</h3>
+        <h3 class="text-xl">Double count: ${doubleCount}</h3>
+        <button
+          @click=${increment}
+          class="rounded hover:bg-pink-700 bg-pink-600 p-2 text-white mt-2">
+          Increment
+        </button>
+      </div>
+      <span class="text-3xl text-white m-2 fixed right-0 bottom-0">${formatTime(date)}</span>
+    </div>
   `;
 }
 
