@@ -1,61 +1,68 @@
+import { html, render } from 'lit-html';
+
 const el = document.getElementById('app');
 
 const React = (function () {
-  const hooks = [];
-
-  // Tracks the current hook
+  let rootEl: HTMLElement;
+  let rootComponent;
+  let hooks = [];
   let currentHook = 0;
 
-  return {
-    render(Component, rootEl: Element) {
-      const Comp = Component();
-      const html = Comp.render();
-      currentHook = 0;
-      rootEl.innerHTML = html;
+  const reactRender = () => {
+    render(rootComponent(), el);
+    currentHook = 0;
+  }
 
-      return Comp;
-    },
-
-    useEffect(callback, depArray) {
-      const hasNoDeps = !depArray;
-      const deps = hooks[currentHook];
-      const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
-
-      if (hasNoDeps || hasChangedDeps) {
-        callback();
-        hooks[currentHook] = depArray;
-      }
-
-      currentHook++;
-    },
-
-    useState(initialValue) {
-      hooks[currentHook] = hooks[currentHook] || initialValue;
-      const setStateHookIndex = currentHook;
-      const setState = newState => (hooks[setStateHookIndex] = newState)
-      return [hooks[currentHook++], setState]
-    }
+  const mount = (el: HTMLElement, Component) => {
+    rootEl = el;
+    rootComponent = Component;
+    reactRender();
   };
+
+  const useEffect = (callback, depArray) => {
+    const hasNoDeps = !depArray
+    const deps = hooks[currentHook] // type: array | undefined
+    const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true
+    if (hasNoDeps || hasChangedDeps) {
+      callback()
+      hooks[currentHook] = depArray
+    }
+    currentHook++ // done with this hook
+  };
+
+  const useState = (initialValue) => {
+    hooks[currentHook] = hooks[currentHook] || initialValue // type: any
+    const setStateHookIndex = currentHook // for setState's closure!
+    const setState = newState => (hooks[setStateHookIndex] = newState)
+    return [hooks[currentHook++], setState]
+  };
+
+  return {
+    mount,
+    render: reactRender,
+    useEffect,
+    useState,
+  }
 })();
 
-function Counter() {
-  const [count, setCount] = React.useState(0);
-  const [text, setText] = React.useState('foo');
+const Component = () => {
+  var [count, setCount] = React.useState(0);
 
   React.useEffect(() => {
-    console.log('effect', count, text)
-  }, [count, text])
+    console.log('hello this is an effect')
+  }, []);
 
-  return {
-    click: () => setCount(count + 1),
-    type: txt => setText(txt),
-    noop: () => setCount(count),
-    render: () => `
-      <h1>Count: ${count}</h1>
-    `
+  const increment = () => {
+    console.log('incrementing: ', count);
+    setCount(count + 1);
+    React.render();
   }
+
+  return html`
+    <h1>Hello World</h1>  
+    <h3>Count: ${count}</h3>
+    <button @click=${increment}>Increment</button>
+  `;
 }
 
-let App;
-
-App = React.render(Counter, el);
+React.mount(el, Component);
