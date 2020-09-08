@@ -12,3 +12,5 @@ Install the dependencies
 Run in dev
 
 `yarn start`
+
+You can access the application [here](http://localhost:1234/index.html) and view the slide show [here](http://localhost:1234/slides.html)
