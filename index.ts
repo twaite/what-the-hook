@@ -30,6 +30,7 @@ const React = (function () {
     const hasNoDeps = !depArray;
     const {deps, teardown}= hooks[currentHook] ?? {} as hookState;
     const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
+    console.log(hasChangedDeps, depArray);
     if (hasNoDeps || hasChangedDeps) {
       if (teardown) teardown();
       hooks[currentHook] = {

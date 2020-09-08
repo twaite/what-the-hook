@@ -17,12 +17,25 @@
         <p>Tim Waite</p>
       </section>
       <section>
+        <p>Goal: Understand the underlying mechanics of hooks</p>
+      </section>
+      <section>
+        <h3>Agenda</h3>
+        <ol>
+          <li>What are hooks?</li>
+          <li>Mock React Framework</li>
+          <li>Use State Hook</li>
+          <li>Use Effect Hook</li>
+          <li>Use Memo Hook</li>
+        </ol>
+      </section>
+      <section>
         <h4>What are hooks?</h4>
-        <p>Hooks provide a way for us to store information in functional components. Because hooks are functions they can be composed, allowing us to make reusable functionality that can be shared between components.</p>
+        <p>Hooks allow you to use state and other react features without writing a class. They allow you to use state and build complex workflows within functional components. Because hooks are functions, they can be composed together to create reusable methods that can be used by many components.</p>
       </section>
       <section>
         <h4>Functional Components</h4>
-        <p>Functional components are basically just functions that return HTML that can be rendered to your browser.</p>
+        <p>Functional components are essentially functions that return HTML that can be rendered to your browser.</p>
       </section>
       <section>
         <h4>Functional Components</h4>
@@ -33,14 +46,52 @@ function Example() {
   // Declare a new state variable, which we'll call "count"
   const [count, setCount] = useState(0);
 
+  const increment = () => setCount(count + 1)
+
   return (
     <div>
       <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
+      <button onClick={increment}>
         Click me
       </button>
     </div>
   );
+}
+
+        </code></pre>
+      </section>
+      <section>
+        <h4>Hook Example</h4>
+        <pre><code class="typescript">
+const MyComponent = () => {
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    const fetchedData = await fetchData();
+    setData(fetchedData);
+  }, []);
+
+  // Custom hook that returns the logged in user
+  const user = useUser();
+
+  return (
+    <div>
+      {data} for {user.name}
+    </div>
+  );
+}
+
+function useUser() {
+
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const userString = localStorage.get('user')
+    const user = JSON.parse(userString);
+    setUser(user);
+  })
+
+  return user;
 }
         </code></pre>
       </section>
@@ -140,7 +191,7 @@ const Component = () => {
   const [one, setOne] = useState(0); // Stack 0
   const [two, setTwo] = useState(0); // Stack 1
   const [three, setThree] = useState(0); // Stack 2
-  }
+}
 
 const reactRender = () => {
   render(rootComponent(), el);
@@ -168,7 +219,7 @@ const useState = (initialValue) => {
   // for setState's closure!
   const setStateHookIndex = currentHook;
   const setState = newState =>
-    hooks([setStateHookIndex] = { value: newState });
+    (hooks[setStateHookIndex] = { value: newState });
 
   return [hooks[currentHook++]?.value, setState];
 };
@@ -330,7 +381,7 @@ const Component = () => {
           <li>Allows complicated calculations to be run when necessary</li>
           <li>Typically values based on state</li>
           <li>I like to think of this as a "computed" method</li>
-          <li>Like useEffect it takes a method that returns the value and an array of dependencies</li>
+          <li>Like useEffect it takes a callback and an array of dependencies. The callback returns the value of the memo.</li>
         </ul>
       </section>
       <section>
@@ -506,6 +557,23 @@ React.mount(el, Component);
       <section>
         <h3>Final Application</h3>
         <iframe src="http://localhost:1234/index.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
+      </section>
+      <section>
+        <h4>Resources</h4>
+        <ul>
+          <li>
+            <a href="https://github.com/twaite/what-the-hook">https://github.com/twaite/what-the-hook</a>
+          </li>
+          <li>
+            <a href="https://www.netlify.com/blog/2019/03/11/deep-dive-how-do-react-hooks-really-work/">Netlify deep dive</a>
+          </li>
+          <li>
+            <a href="https://amiiy.github.io/a-complete-guide-to-useeffect/">A Complete Guide to Use Effect</a>
+          </li>
+          <li>
+            <a href="https://khairold.com/making-setinterval-declarative-with-react-hooks/">Making setInterval Declarative with React Hooks</a>
+          </li>
+        </ul>
       </section>
     </div>
   </div>
