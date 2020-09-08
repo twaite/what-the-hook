@@ -3,10 +3,15 @@ import { format } from 'date-fns'
 
 const el = document.getElementById('app');
 
+interface hookState {
+  deps?: any[];
+  value?: any;
+} 
+
 const React = (function () {
   let rootEl: HTMLElement;
   let rootComponent;
-  let hooks = [];
+  let hooks = [] as hookState[];
   let currentHook = 0;
 
   const reactRender = () => {
@@ -22,34 +27,39 @@ const React = (function () {
 
   const useEffect = (callback, depArray) => {
     const hasNoDeps = !depArray;
-    const deps = hooks[currentHook]; // type: array | undefined
+    const deps = hooks[currentHook]?.deps; // type: array | undefined
     const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
     if (hasNoDeps || hasChangedDeps) {
       callback();
-      hooks[currentHook] = depArray;
+      hooks[currentHook] = {
+        deps: depArray
+      };
     }
     currentHook++; // done with this hook
   };
 
   const useState = (initialValue) => {
-    hooks[currentHook] = hooks[currentHook] || initialValue; // type: any
+    hooks[currentHook] = hooks[currentHook] || {value: initialValue}; // type: any
     const setStateHookIndex = currentHook; // for setState's closure!
-    const setState = newState => (hooks[setStateHookIndex] = newState);
-    return [hooks[currentHook++], setState];
+    const setState = newState => (hooks[setStateHookIndex] = {value: newState});
+    return [hooks[currentHook++]?.value, setState];
   };
 
   const useMemo = (memo, depArray) => {
     const hasNoDeps = !depArray;
-    var [value, deps] = hooks[currentHook] ?? []; // type: array | undefined
-    const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
+    var hook = hooks[currentHook] ?? {} as hookState; // type: array | undefined
+    const hasChangedDeps = hook?.deps ? !depArray.every((el, i) => el === hook?.deps[i]) : true;
 
     if (hasNoDeps || hasChangedDeps) {
-      value = memo()
+      hook.value = memo()
     }
 
-    hooks[currentHook++] = [value, depArray]
+    hooks[currentHook++] = {
+      value: hook.value,
+      deps: depArray
+    }
 
-    return value;
+    return hook.value;
   }
 
   return {
