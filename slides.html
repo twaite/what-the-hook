@@ -5,6 +5,7 @@
   <title>What the hook?</title>
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.0.2/dist/reveal.css">
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.0.2/dist/theme/black.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.0.2/plugin/highlight/monokai.css">
 </head>
 
 <body>
@@ -23,10 +24,77 @@
       </section>
       <section>
         <h4>Basic Application Setup</h4>
+        <pre id="app-setup"><code>
+          import { html, render } from 'lit-html';
+          import { format } from 'date-fns'
+
+          // Get root element
+          const el = document.getElementById('app');
+
+          // Sets up a generic typing for storing state information
+          interface hookState {
+            deps?: any[];
+            value?: any;
+          } 
+
+          // Define our fake react app
+          const React = (function () {
+            let rootEl: HTMLElement;
+            let rootComponent;
+            let hooks = [] as hookState[];
+            let currentHook = 0;
+
+            // Don't worry too much about this, just know it will put the info on the screen
+            const reactRender = () => {
+              render(rootComponent(), el);
+              currentHook = 0;
+            }
+
+            const mount = (el: HTMLElement, Component) => {
+              rootEl = el;
+              rootComponent = Component;
+              reactRender();
+            };
+
+            // This is what we'll be building
+            const useEffect = () => {};
+            const useState = () => {};
+            const useMemo = () => {}
+
+            return {
+              mount,
+              render: reactRender,
+              useEffect,
+              useMemo,
+              useState,
+            }
+          })();
+
+          // Example Component
+          const Component = () => {
+
+            const log = () => {
+              console.log('hello world');
+            }
+
+            return html`
+              <div class="bg-white p-4 rounded">
+                <h1>My Component</h1>
+                <button @click=${log}>Log</button>
+              </div>
+            `;
+          }
+
+          React.mount(el, Component);
+        </pre></code>
+  <script>
+    fetch('http://localhost:1234/basics.ts')
+      .then(x => console.log)
+  </script>
         <iframe src="http://localhost:1234/basics.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
-<!--   Use Effect     -->
+      <!-- Use Effect -->
       <section>
         <h4>Use Effect Hook</h4>
         Definition
@@ -74,10 +142,14 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/highlight.min.js"></script>
+  <script src="https://unpkg.com/reveal.js@4.0.2/plugin/highlight/highlight.js"></script>
   <script src="https://unpkg.com/reveal.js@4.0.2/dist/reveal.js"></script>
 
   <script>
-    Reveal.initialize({});
+    Reveal.initialize({
+      plugins: [ RevealHighlight ]
+    });
   </script>
 
 </body>
