@@ -56,7 +56,8 @@ function Example() {
   interface hookState {
     deps?: any[];
     value?: any;
-  } 
+    teardown?: () => void;
+  };
 
   // Define our fake react app
   const React = (function () {
@@ -112,80 +113,6 @@ function Example() {
         <iframe src="http://localhost:1234/basics.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
-      <!-- Use Effect -->
-      <section>
-        <h4>Use Effect Hook</h4>
-        <ul>
-          <li>Allows you to perform side effects</li>
-          <li>Take two arguments, the first is the function to run, the second is the dependencies.</li>
-          <li>You can return a "cleanup" function</li>
-        </ul>
-      </section>
-      <section>
-        <h4>Use Effect Hook (Pseudocode)</h4>
-        <pre><code class="typescript">
-  const useEffect = (callback, depArray) => {
-    // Check if there are dependencies
-    // See if the dependencies have changed
-    // If there are no deps or they've changed
-    //    then call the effect
-    //    update the current hook
-    // increment the call stack
-  }
-        </pre></code>
-      </section>
-      <section>
-        <h4>The call stack</h4>
-        <p>Hooks are plain functions so we need to keep track of where the info is stored</p>
-        <pre><code class="typescript">
-const Component = () => {
-  const [one, setOne] = useState(0); // Stack 0
-  const [two, setTwo] = useState(0); // Stack 1
-  const [three, setThree] = useState(0); // Stack 2
-  }
-
-const reactRender = () => {
-  render(rootComponent(), el);
-  currentHook = 0;
-}
-        </pre></code>
-      </section>
-      <section>
-        <h4>Use Effect Hook (Code)</h4>
-        <pre><code class="typescript">
-interface hookState {
-  deps?: any[];
-  value?: any;
-} 
-
-let hooks = [] as hookState[];
-let currentHook = 0;
-
-const useEffect = (callback, depArray) => {
-  const hasNoDeps = !depArray;
-
-  // type: array | undefined
-  const deps = hooks[currentHook]?.deps;
-  const hasChangedDeps =
-    deps
-      ? depArray!.every((el, i) => el === deps[i])
-      : true;
-
-  if (hasNoDeps || hasChangedDeps) {
-    callback();
-    hooks[currentHook] = {
-      deps: depArray
-    };
-  }
-  currentHook++; // done with this hook
-};
-        </pre></code>
-      </section>
-      <!-- <section> -->
-      <!--   <h4>Use Effect Hook</h4> -->
-      <!--   <iframe src="http://localhost:1234/use-effect.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" /> -->
-      <!-- </section> -->
-
       <!-- Use State -->
       <section>
         <h4>Use State Hook</h4>
@@ -206,12 +133,37 @@ const useState = (initialValue) => {
         </pre></code>
       </section>
       <section>
+        <h4>The call stack</h4>
+        <p>Hooks are plain functions so we need to keep track of where the info is stored</p>
+        <pre><code class="typescript">
+const Component = () => {
+  const [one, setOne] = useState(0); // Stack 0
+  const [two, setTwo] = useState(0); // Stack 1
+  const [three, setThree] = useState(0); // Stack 2
+  }
+
+const reactRender = () => {
+  render(rootComponent(), el);
+  currentHook = 0;
+}
+        </pre></code>
+      </section>
+      <section>
         <h4>Use State Hook (Code)</h4>
         <pre><code class="typescript">
+interface hookState {
+  deps?: any[];
+  value?: any;
+  teardown?: () => void;
+} 
+
+let hooks = [] as hookState[];
+let currentHook = 0;
+
 const useState = (initialValue) => {
   hooks[currentHook] =
     hooks[currentHook]
-    || {value: initialValue};
+    || { value: initialValue };
 
   // for setState's closure!
   const setStateHookIndex = currentHook;
@@ -222,10 +174,73 @@ const useState = (initialValue) => {
 };
         </pre></code>
       </section>
-      <!-- <section> -->
-      <!--   <h4>Use State Hook</h4> -->
-      <!--   <iframe src="http://localhost:1234/use-state.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" /> -->
-      <!-- </section> -->
+      <section>
+        <h4>Use State Hook</h4>
+        <iframe src="http://localhost:1234/use-state.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
+      </section>
+
+      <!-- Use Effect -->
+      <section>
+        <h4>Use Effect Hook</h4>
+        <ul>
+          <li>Allows you to perform side effects</li>
+          <li>Take two arguments, the first is the function to run, the second is the dependencies.</li>
+          <li>You can return a "cleanup" or "teardown" function</li>
+        </ul>
+      </section>
+      <section>
+        <h4>Use Effect Hook (Pseudocode)</h4>
+        <pre><code class="typescript">
+  const useEffect = (callback, depArray) => {
+    // Check if there are dependencies
+    // See if the dependencies have changed
+    // If there are no deps or they've changed
+    //    if there was a teardown method from last time
+    //      then call the teardown
+    //    then call the effect
+    //    update the current hook
+    // increment the call stack
+  }
+        </pre></code>
+      </section>
+      <section>
+        <h4>Use Effect Hook (Code)</h4>
+        <pre><code class="typescript">
+interface hookState {
+  deps?: any[];
+  value?: any;
+  teardown?: () => void;
+} 
+
+let hooks = [] as hookState[];
+let currentHook = 0;
+
+const useEffect = (callback, depArray) => {
+  const hasNoDeps = !depArray;
+
+  // type: array | undefined
+  const {deps, teardown} = hooks[currentHook] ?? {} as hookState;
+  const hasChangedDeps =
+    deps
+      ? depArray!.every((el, i) => el === deps[i])
+      : true;
+
+  if (hasNoDeps || hasChangedDeps) {
+    if (teardown) teardown();
+
+    hooks[currentHook] = {
+      deps: depArray,
+      teardown: callback()
+    };
+  }
+  currentHook++; // done with this hook
+};
+        </pre></code>
+      </section>
+      <section>
+        <h4>Use Effect Hook</h4>
+        <iframe src="http://localhost:1234/use-effect.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
+      </section>
 
       <!-- Use Memo -->
       <section>
@@ -291,6 +306,7 @@ const el = document.getElementById('app');
 interface hookState {
   deps?: any[];
   value?: any;
+  teardown?: () => void
 } 
 
 const React = (function () {
@@ -312,20 +328,19 @@ const React = (function () {
 
   const useEffect = (callback, depArray) => {
     const hasNoDeps = !depArray;
-    const deps = hooks[currentHook]?.deps; // type: array | undefined
+    const {deps, teardown}= hooks[currentHook] ?? {} as hookState;
     const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
     if (hasNoDeps || hasChangedDeps) {
-      callback();
       hooks[currentHook] = {
-        deps: depArray
+        deps: depArray,
+        teardown: callback()
       };
     }
     currentHook++; // done with this hook
   };
 
   const useState = (initialValue) => {
-    hooks[currentHook] =
-      hooks[currentHook] || {value: initialValue}; // type: any
+    hooks[currentHook] = hooks[currentHook] || {value: initialValue}; // type: any
     const setStateHookIndex = currentHook; // for setState's closure!
     const setState = newState => (hooks[setStateHookIndex] = {value: newState});
     return [hooks[currentHook++]?.value, setState];
