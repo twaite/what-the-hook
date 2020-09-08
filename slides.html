@@ -18,86 +18,112 @@
       </section>
       <section>
         <h4>What are hooks?</h4>
+        <p>Hooks provide a way for us to store information in functional components. Because hooks are functions they can be composed, allowing us to make reusable functionality that can be shared between components.</p>
       </section>
       <section>
         <h4>Functional Components</h4>
+        <p>Functional components are basically just functions that return HTML that can be rendered to your browser.</p>
+      </section>
+      <section>
+        <h4>Functional Components</h4>
+        <pre><code>
+import React, { useState } from 'react';
+
+function Example() {
+  // Declare a new state variable, which we'll call "count"
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+        </pre></code>
       </section>
       <section>
         <h4>Basic Application Setup</h4>
         <pre id="app-setup"><code>
-          import { html, render } from 'lit-html';
-          import { format } from 'date-fns'
+  import { html, render } from 'lit-html';
 
-          // Get root element
-          const el = document.getElementById('app');
+  // Get root element
+  const el = document.getElementById('app');
 
-          // Sets up a generic typing for storing state information
-          interface hookState {
-            deps?: any[];
-            value?: any;
-          } 
+  // Sets up a generic typing for storing state information
+  interface hookState {
+    deps?: any[];
+    value?: any;
+  } 
 
-          // Define our fake react app
-          const React = (function () {
-            let rootEl: HTMLElement;
-            let rootComponent;
-            let hooks = [] as hookState[];
-            let currentHook = 0;
+  // Define our fake react app
+  const React = (function () {
+    let rootEl: HTMLElement;
+    let rootComponent;
+    let hooks = [] as hookState[];
+    let currentHook = 0;
 
-            // Don't worry too much about this, just know it will put the info on the screen
-            const reactRender = () => {
-              render(rootComponent(), el);
-              currentHook = 0;
-            }
+    // Don't worry too much about this, 
+    // just know it will put the info on the screen
+    const reactRender = () => {
+      render(rootComponent(), el);
+      currentHook = 0;
+    }
 
-            const mount = (el: HTMLElement, Component) => {
-              rootEl = el;
-              rootComponent = Component;
-              reactRender();
-            };
+    const mount = (el: HTMLElement, Component) => {
+      rootEl = el;
+      rootComponent = Component;
+      reactRender();
+    };
 
-            // This is what we'll be building
-            const useEffect = () => {};
-            const useState = () => {};
-            const useMemo = () => {}
+    // This is what we'll be building
+    const useEffect = () => {};
+    const useState = () => {};
+    const useMemo = () => {}
 
-            return {
-              mount,
-              render: reactRender,
-              useEffect,
-              useMemo,
-              useState,
-            }
-          })();
+    return {
+      mount,
+      render: reactRender,
+      useEffect,
+      useMemo,
+      useState,
+    }
+  })();
 
-          // Example Component
-          const Component = () => {
+  // Example Component
+  const Component = () => {
 
-            const log = () => {
-              console.log('hello world');
-            }
+    const log = () => {
+      console.log('hello world');
+    }
 
-            return html`
-              <div class="bg-white p-4 rounded">
-                <h1>My Component</h1>
-                <button @click=${log}>Log</button>
-              </div>
-            `;
-          }
+    return html`
+      <div class="bg-white p-4 rounded">
+        <h1>My Component</h1>
+        <button @click=${log}>Log</button>
+      </div>
+    `;
+  }
 
-          React.mount(el, Component);
+  React.mount(el, Component);
         </pre></code>
-  <script>
-    fetch('http://localhost:1234/basics.ts')
-      .then(x => console.log)
-  </script>
         <iframe src="http://localhost:1234/basics.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
       <!-- Use Effect -->
       <section>
         <h4>Use Effect Hook</h4>
-        Definition
+        <ul>
+          <li>Allows you to perform side effects</li>
+          <li>Take two arguments, the first is the function to run, the second is the dependencies.</li>
+          <li>You can return a "cleanup" function</li>
+        </ul>
+      </section>
+      <section>
+        <h4>Use Effect Hook</h4>
+        Code
       </section>
       <section>
         <h4>Use Effect Hook</h4>
