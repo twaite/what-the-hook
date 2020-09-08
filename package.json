@@ -5,7 +5,7 @@
   "main": "index.html",
   "license": "MIT",
   "scripts": {
-    "start": "parcel index.html *.ts",
+    "start": "parcel *.html *.ts",
     "build": "parcel build index.html"
   },
   "devDependencies": {

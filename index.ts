@@ -93,18 +93,18 @@ const Component = () => {
   }
 
   return html`
-    <div class="flex flex-col bg-gray-700 items-center justify-center rounded py-5">
-      <div class="rounded bg-gray-100 w-1/3 px-6 py-4 flex flex-col shadow-lg">
-        <div class="text-3xl text-gray-800">What the Hook?!</div>  
-        <div class="text-base text-gray-800">Count: ${count}</div>
-        <div class="text-base text-gray-800">Double count: ${doubleCount}</div>
-        <div
+    <div class="h-screen w-100 flex flex-col bg-gray-700 items-center justify-center">
+      <div class="rounded bg-gray-100 w-2/3 px-6 py-4 flex flex-col shadow-lg">
+        <h1 class="text-3xl">What the Hook?!</h1>  
+        <h3 class="text-xl">Count: ${count}</h3>
+        <h3 class="text-xl">Double count: ${doubleCount}</h3>
+        <button
           @click=${increment}
-          class="rounded hover:bg-pink-700 bg-pink-600 p-2 text-white text-sm mt-2 cursor-pointer">
+          class="rounded hover:bg-pink-700 bg-pink-600 p-2 text-white mt-2">
           Increment
-        </div>
+        </button>
       </div>
-      <span class="text-3xl text-white my-5 mx-2 fixed right-0 bottom-0">${formatTime(date)}</span>
+      <span class="text-3xl text-white m-2 fixed right-0 bottom-0">${formatTime(date)}</span>
     </div>
   `;
 }
