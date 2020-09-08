@@ -42,7 +42,7 @@ function Example() {
     </div>
   );
 }
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>Basic Application Setup</h4>
@@ -109,7 +109,7 @@ function Example() {
   }
 
   React.mount(el, Component);
-        </pre></code>
+        </code></pre>
         <iframe src="http://localhost:1234/basics.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
@@ -130,7 +130,7 @@ const useState = (initialValue) => {
   // Return the value and the new setter
   // increment the callstack
 };
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>The call stack</h4>
@@ -146,7 +146,7 @@ const reactRender = () => {
   render(rootComponent(), el);
   currentHook = 0;
 }
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>Use State Hook (Code)</h4>
@@ -172,11 +172,44 @@ const useState = (initialValue) => {
 
   return [hooks[currentHook++]?.value, setState];
 };
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>Use State Hook</h4>
-        <iframe src="http://localhost:1234/use-state.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
+        <pre><code>
+const Component = () => {
+  var [count, setCount] = React.useState(0);
+  var [date, setDate] = React.useState(new Date());
+
+  const increment = () => {
+    setCount(count + 1);
+    React.render();
+  }
+
+  const formatTime = (date: Date) => {
+    return format(date, 'HH:mm:ss a')
+  }
+
+  return html`
+    <div class="container">
+      <div class="modal">
+        <h1>What the Hook?!</h1>  
+        <h3>Count: ${count}</h3>
+        <button
+          @click=${increment}
+          class="button">
+          Increment
+        </button>
+      </div>
+      <span class="time">${formatTime(date)}</span>
+    </div>
+  `;
+}
+        </code></pre>
+      </section>
+      <section>
+        <h4>Use State Hook</h4>
+        <iframe src="http://localhost:1234/use-state.html" style="height: 30vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
       <!-- Use Effect -->
@@ -184,8 +217,8 @@ const useState = (initialValue) => {
         <h4>Use Effect Hook</h4>
         <ul>
           <li>Allows you to perform side effects</li>
-          <li>Take two arguments, the first is the function to run, the second is the dependencies.</li>
-          <li>You can return a "cleanup" or "teardown" function</li>
+          <li>Takes two arguments, the first is the function to run, the second is the dependencies.</li>
+          <li>You can return a "cleanup" or "teardown" function.</li>
         </ul>
       </section>
       <section>
@@ -201,7 +234,7 @@ const useState = (initialValue) => {
     //    update the current hook
     // increment the call stack
   }
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>Use Effect Hook (Code)</h4>
@@ -226,6 +259,7 @@ const useEffect = (callback, depArray) => {
       : true;
 
   if (hasNoDeps || hasChangedDeps) {
+
     if (teardown) teardown();
 
     hooks[currentHook] = {
@@ -235,7 +269,54 @@ const useEffect = (callback, depArray) => {
   }
   currentHook++; // done with this hook
 };
-        </pre></code>
+        </code></pre>
+      </section>
+
+      <section>
+        <h4>Use Effect Hook</h4>
+        <pre><code class="typescript">
+const Component = () => {
+  var [count, setCount] = React.useState(0);
+  var [date, setDate] = React.useState(new Date());
+
+  React.useEffect(() => {
+    console.info('%cRunning the first effect', 'color: purple; background: white; padding: 4px; font-size: 2em;');
+  }, []);
+
+  React.useEffect(() => {
+    var timeout = setTimeout(() => {
+      setDate(new Date());
+      React.render();
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [date, setDate])
+
+  const increment = () => {
+    setCount(count + 1);
+    React.render();
+  }
+
+  const formatTime = (date: Date) => {
+    return format(date, 'HH:mm:ss a')
+  }
+
+  return html`
+    <div class="content">
+      <div class="modal">
+        <h1>What the Hook?!</h1>  
+        <h3>Count: ${count}</h3>
+        <button
+          @click=${increment}
+          class="button">
+          Increment
+        </button>
+      </div>
+      <span class="time">${formatTime(date)}</span>
+    </div>
+  `;
+}
+        </code></pre>
       </section>
       <section>
         <h4>Use Effect Hook</h4>
@@ -262,7 +343,7 @@ const useMemo = (memo, depArray) => {
   //   then run the memo and return the value
   // Increment the callstack
 }
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h4>Use Memo Hook (Code)</h4>
@@ -289,12 +370,10 @@ const useMemo = (memo, depArray) => {
 
   return hook.value;
 }
-        </pre></code>
+        </code></pre>
       </section>
-      <!-- <section> -->
-      <!--   <h4>Use Memo Hook</h4> -->
-      <!--   <iframe src="http://localhost:1234/use-memo.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" /> -->
-      <!-- </section> -->
+
+      <!-- Final -->
       <section>
         <h3>Final Application</h3>
         <pre><code class="typescript">
@@ -326,24 +405,25 @@ const React = (function () {
     reactRender();
   };
 
+  const useState = (initialValue) => {
+    hooks[currentHook] = hooks[currentHook] || {value: initialValue}; // type: any
+    const setStateHookIndex = currentHook; // for setState's closure!
+    const setState = newState => (hooks[setStateHookIndex] = {value: newState});
+    return [hooks[currentHook++]?.value, setState];
+  };
+  
   const useEffect = (callback, depArray) => {
     const hasNoDeps = !depArray;
     const {deps, teardown}= hooks[currentHook] ?? {} as hookState;
     const hasChangedDeps = deps ? !depArray.every((el, i) => el === deps[i]) : true;
     if (hasNoDeps || hasChangedDeps) {
+      if (teardown) teardown();
       hooks[currentHook] = {
         deps: depArray,
         teardown: callback()
       };
     }
     currentHook++; // done with this hook
-  };
-
-  const useState = (initialValue) => {
-    hooks[currentHook] = hooks[currentHook] || {value: initialValue}; // type: any
-    const setStateHookIndex = currentHook; // for setState's closure!
-    const setState = newState => (hooks[setStateHookIndex] = {value: newState});
-    return [hooks[currentHook++]?.value, setState];
   };
 
   const useMemo = (memo, depArray) => {
@@ -404,24 +484,24 @@ const Component = () => {
   }
 
   return html`
-    <div class="h-screen w-100 flex flex-col bg-gray-700 items-center justify-center">
-      <div class="rounded bg-gray-100 w-2/3 px-6 py-4 flex flex-col shadow-lg">
-        <h1 class="text-3xl">What the Hook?!</h1>  
-        <h3 class="text-xl">Count: ${count}</h3>
-        <h3 class="text-xl">Double count: ${doubleCount}</h3>
+    <div class="content">
+      <div class="modal">
+        <h1>What the Hook?!</h1>  
+        <h3>Count: ${count}</h3>
+        <h3>Double count: ${doubleCount}</h3>
         <button
           @click=${increment}
-          class="rounded hover:bg-pink-700 bg-pink-600 p-2 text-white mt-2">
+          class="button">
           Increment
         </button>
       </div>
-      <span class="text-3xl text-white m-2 fixed right-0 bottom-0">${formatTime(date)}</span>
+      <span class="time">${formatTime(date)}</span>
     </div>
   `;
 }
 
 React.mount(el, Component);
-        </pre></code>
+        </code></pre>
       </section>
       <section>
         <h3>Final Application</h3>
