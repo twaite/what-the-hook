@@ -164,6 +164,10 @@ function useUser() {
         <iframe src="http://localhost:1234/basics.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
+      <section>
+        <h3>Insert joke here</h3>
+      </section>
+
       <!-- Use State -->
       <section>
         <h4>Use State Hook</h4>
@@ -175,6 +179,11 @@ function useUser() {
       <section>
         <h4>Use State Hook (Pseudocode)</h4>
         <pre><code class="typescript">
+/**
+ * Stores a state value and returns the value and a setter
+ * @param initialValue the value to initially store in the state, not required
+ * @return array with value and setter
+ */
 const useState = (initialValue) => {
   // Set the new value to the current value or the initial value
   // Create a new setter function based on current index
@@ -263,6 +272,10 @@ const Component = () => {
         <iframe src="http://localhost:1234/use-state.html" style="height: 30vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
+      <section>
+        <h3>Insert joke here</h3>
+      </section>
+
       <!-- Use Effect -->
       <section>
         <h4>Use Effect Hook</h4>
@@ -275,6 +288,12 @@ const Component = () => {
       <section>
         <h4>Use Effect Hook (Pseudocode)</h4>
         <pre><code class="typescript">
+  /**
+   * Runs a side effect
+   * @param callback to execute side effect, returns a cleanup function
+   * @param depArray array of dependencies
+   * @return teardown function
+   */
   const useEffect = (callback, depArray) => {
     // Check if there are dependencies
     // See if the dependencies have changed
@@ -374,11 +393,16 @@ const Component = () => {
         <iframe src="http://localhost:1234/use-effect.html" style="height: 50vh; width: 75vw; border: none; border-radius: 4px" />
       </section>
 
+
+      <section>
+        <h3>Insert joke here</h3>
+      </section>
+
       <!-- Use Memo -->
       <section>
         <h4>Use Memo Hook</h4>
         <ul>
-          <li>Allows complicated calculations to be run when necessary</li>
+          <li>Allows complicated calculations to be run only when necessary</li>
           <li>Typically values based on state</li>
           <li>I like to think of this as a "computed" method</li>
           <li>Like useEffect it takes a callback and an array of dependencies. The callback returns the value of the memo.</li>
@@ -387,6 +411,12 @@ const Component = () => {
       <section>
         <h4>Use Memo Hook (Pseudocode)</h4>
         <pre><code class="typescript">
+/**
+ * Calculates a value
+ * @param memo callback that returns the calculated value
+ * @param depArray array of dependencies, will execute callback when they change
+ * @return memoized value
+ */
 const useMemo = (memo, depArray) => {
   // Check if there are dependencies
   // Check if dependencies have changed
